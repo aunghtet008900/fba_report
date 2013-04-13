@@ -3,7 +3,7 @@
 module MyConfig
   CONFIG = {
             :adapter => 'sqlite3',
-            :database => File.expand_path('../db/production.sqlite3', __FILE__),
+            :database => File.expand_path('../production.sqlite3', __FILE__),
             :pool => 5,
             :timeout => 5000
   }

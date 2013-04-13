@@ -2,12 +2,10 @@
 
 require 'sqlite3'
 require 'active_record'
-require 'yaml'
+require_relative 'db/config.rb'
+require_relative 'lib/gem_example'
 
-ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :database => File.expand_path('../db/production.sqlite3', __FILE__)
-)
+ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
 
 #take the version from the command line, or use nil if there is no command line argument

@@ -2,7 +2,7 @@
 
 require 'sqlite3'
 require 'active_record'
-require_relative 'config.rb'
+require_relative 'db/config.rb'
 require_relative 'lib/gem_example'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
