@@ -2,8 +2,8 @@
 
 require 'sqlite3'
 require 'active_record'
-require_relative 'db/config.rb'
-require_relative 'lib/gem_example'
+require_relative 'db/config'
+require_relative 'lib/book_culture_lib'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
