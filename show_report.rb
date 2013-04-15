@@ -14,40 +14,16 @@ ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 # Generate the data structure from queries
 # ----------------------------------------
 
-# Where the main report data is kept:
-#report_data = []
 
 
-class ReportData
-  def initialize( date_generated, all_skus )
-    @date_generated = date_generated
-    @all_skus = all_skus
-    @days = []
-  end
-
-  def add_day( day )
-    @days << day
-  end
-
-  alias_method :<<, :add_day
-
-  def get_binding
-    binding
-  end
-end
-
-
-# Will be used for generating a table later:
+# Will be used for generating a table:
 fba_skus = BookCultureLib::AmazonOrder.uniq.pluck(:sku)
-
-
-report_data = ReportData.new( Time.now.to_s, fba_skus )
-#report_data.add_day ( hash_of_products_sold_in_a_day )
-
-
-
 #TODO: Might be better to do a .where with the start and end of range, then do a pluck from that, so we're only listing fba skus that exist in the desired range.
 #(Make this some sort of configurable option!)
+
+
+report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
+
 
 # PSEUDOCODE:
 #
@@ -92,30 +68,6 @@ end
 #        finish a row
 #      end
 
-
-###############################################################################
-### The following is all just DEBUG stuff while trying
-### to test out and understand ERB:
-
-## Create template.
-##template = ERB.new %{
-#template = %{
-#  <html>
-#    <head><title>Ruby Toys -- <%= @name %></title></head>
-#    <body>
-
-#      <h1><%= @name %></h1>
-#      <p><%= @desc %></p>
-
-#       <ul>
-#        <% @features.each do |f| %>
-#          <li><b><%= f %></b></li>
-#        <% end %>
-#      </ul>
-
-#    </body>
-#  </html>
-#}.gsub(/^  /, '')
 
 
 template = %{
@@ -168,62 +120,6 @@ template = %{
 
 rhtml = ERB.new(template)
 
-#TODO: Design a class that I'll use for the reports.
-#       (Hell, you can even figure a few classes out, so you can do different kinds of reports.)
-#
-#TODO: Move the class to a different file.
-
-#class Product
-#  def initialize( name, desc )
-#    @name = name
-#    @desc = desc
-#    @features = []
-#  end
-
-#  def add_feature( feature )
-#    @features << feature
-#  end
-
-#  def get_binding
-#    binding
-#  end
-#end
-
-
-
-
-#       datastructure = [
-#                         {:date=>datetime1,
-#                          :quantities=>
-#                            {"sku1"=>1,
-#                             "sku2"=>3,
-#                             "sku3"=>1
-#                            }
-#                          },
-#                         {:date=>datetime2,
-#                          :quantities=>
-#                            {"sku1"=>4,
-#                             "sku3"=>2
-#                            }
-#                          },
-#                         {:date=>datetime3,
-#                          :quantities=>
-#                            {"sku1"=>3,
-#                             "sku2"=>3,
-#                             "sku3"=>1,
-#                             "sku5"=>2
-#                            }
-#                          }
-#       ]
-
-
-
-#toy = Product.new( "Rubysapien", "Geek's Best Friend!")
-#toy.add_feature("Listens for verbal commands in the Ruby language!")
-#toy.add_feature("Ignores Perl, Java, and all C variants.")
-
-
-#puts rhtml.result(toy.get_binding)
 puts rhtml.result(report_data.get_binding)
 #TODO: Output html to a file, instead of stdout
 #       (although having a stdout option might be nice...)

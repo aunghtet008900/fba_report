@@ -17,8 +17,8 @@
 #  updated_at          :datetime         not null
 #
 
-
 module BookCultureLib
+
   class AmazonOrder < ActiveRecord::Base
 
     validates :amazon_order_id, presence: true, uniqueness: true
@@ -45,5 +45,6 @@ module BookCultureLib
     end
 
   end
+
 end
 

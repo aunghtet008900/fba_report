@@ -7,6 +7,7 @@ require_relative 'lib/book_culture_lib'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
+#TODO: Make this be an option:
 ## Show all orders:
 #BookCultureLib::AmazonOrder.all.each do |ord|
 #  puts ord
