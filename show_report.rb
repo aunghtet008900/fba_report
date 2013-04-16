@@ -9,13 +9,6 @@ require_relative 'lib/book_culture_lib'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
-
-# ----------------------------------------
-# Generate the data structure from queries
-# ----------------------------------------
-
-
-
 # Will be used for generating a table:
 fba_skus = BookCultureLib::AmazonOrder.uniq.pluck(:sku)
 #TODO: Might be better to do a .where with the start and end of range, then do a pluck from that, so we're only listing fba skus that exist in the desired range.
@@ -38,6 +31,7 @@ report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
 start_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date - 14
 end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 
+#Generate the data structure from queries
 (start_date..end_date).each do |day|
   start_of_day = day
   end_of_day = day + 1
@@ -51,74 +45,11 @@ end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
   report_data << temp_hash
 end
 
-
-# -----------------------------
-# Generate html using templates
-# -----------------------------
-
-#require 'pp'    #DEBUG
-#pp report_data  #DEBUG
-
-## PSEUDOCODE:
-#      report_data.each do |day|
-#        start a row
-#        fba_skus.each do |sku|
-#          make a cell based on the day[:quantities][sku]
-#        end
-#        finish a row
-#      end
-
-
-
-template = %{
-  <html>
-    <head><title>Generated on <%= @date_generated %></title></head>
-    <style>
-      .table {
-        border: 1px solid #666666;
-        border-collapse: collapse;
-      }
-      .table th {
-        border: 1px solid #666666;
-        padding: 8px;
-        background-color: #dedede;
-      }
-      .table td {
-        border: 1px solid #666666;
-        padding: 8px;
-        background-color: #ffffff;
-      }
-    </style>
-    <body>
-
-      <h1>Generated on <%= @date_generated %></h1>
-
-      <table class="table">
-        <tr>
-          <th>Day</th>
-          <% @all_skus.each do |sku| %>
-            <th><%= sku %></th>
-          <% end %>
-        </tr>
-        <% @days.each do |day| %>
-          <tr>
-            <td><%= day[:date] %></td>
-            <% @all_skus.each do |sku| %>
-              <td><%= day[:quantities][sku] %></td>
-            <% end %>
-          </tr>
-        <% end %>
-      </table>
-
-    </body>
-  </html>
-}.gsub(/^  /, '')
-#The gsub is just to remove the first two spaces on each line.
-# It should be removed when you end up reading this from a file.
-
-#TODO: Read the template from a file, instead.
-
-rhtml = ERB.new(template)
+#TODO: Move the template path stuff to the config?
+template = IO.read(File.expand_path('../views/report_template.html.erb',
+                                    __FILE__))
+rhtml = ERB.new(template, 0, '>')
+# The 0 does nothing special, the '>' eliminates pointless newlines
 
 puts rhtml.result(report_data.get_binding)
 #TODO: Output html to a file, instead of stdout
