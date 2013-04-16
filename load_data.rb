@@ -23,9 +23,20 @@ csv_args = {
   :header_converters => :amazon_symbol # Custom header conversion.
 }
 
+before_count = BookCultureLib::AmazonOrder.count
+row_count = 0
+fba_count = 0
+
+puts "Parsing #{the_file} ..."
+
 CSV.foreach(the_file, csv_args) do |row|
 
+  row_count += 1
+
   if row[:fulfillment_channel] == 'Amazon'
+
+    fba_count += 1
+
     BookCultureLib::AmazonOrder.where(amazon_order_id: row[:amazon_order_id]).
       first_or_create(purchase_date: DateTime.parse(row[:purchase_date]),
                       fulfillment_channel: row[:fulfillment_channel],
@@ -44,4 +55,11 @@ CSV.foreach(the_file, csv_args) do |row|
   # exist. Might be faster...?
 
 end
+
+after_count = BookCultureLib::AmazonOrder.count
+
+puts "Done."
+puts "Rows read:      #{row_count}"
+puts "FBA rows:       #{fba_count}"
+puts "FBA rows added: #{after_count - before_count}"
 
