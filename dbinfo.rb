@@ -22,9 +22,11 @@ end
 
 puts "Number of database records:"
 puts "  " + BookCultureLib::AmazonOrder.count.to_s
-puts "first purchase date:"
-puts "  " + BookCultureLib::AmazonOrder.first.purchase_date.to_s
-puts "last purchase date:"
-puts "  " + BookCultureLib::AmazonOrder.last.purchase_date.to_s
+if BookCultureLib::AmazonOrder.first
+  puts "first purchase date:"
+  puts "  " + BookCultureLib::AmazonOrder.first.purchase_date.to_s
+  puts "last purchase date:"
+  puts "  " + BookCultureLib::AmazonOrder.last.purchase_date.to_s
+end
 
 puts
