@@ -17,24 +17,27 @@ the_file = ARGV[0]
 
 csv_args = {
   :headers => true,
-  :col_sep => "\t",
-  :skip_blanks => false,
-  :header_converters => :amazon_symbol
+  :col_sep => "\t",                    # Tabs separate columns.
+  :skip_blanks => false,               # Skip blank lines.
+  :quote_char => '`',                  # So normal quotes don't mess things up.
+  :header_converters => :amazon_symbol # Custom header conversion.
 }
 
 CSV.foreach(the_file, csv_args) do |row|
 
-  BookCultureLib::AmazonOrder.where(amazon_order_id: row[:amazon_order_id]).
-                              first_or_create(purchase_date: DateTime.parse(row[:purchase_date]),
-                                              fulfillment_channel: row[:fulfillment_channel],
-                                              product_name: row[:product_name],
-                                              sku: row[:sku],
-                                              asin: row[:asin],
-                                              quantity: row[:quantity],
-                                              item_price: row[:item_price],
-                                              ship_postal_code: row[:ship_postal_code],
-                                              ship_country: row[:ship_country]
-  )
+  if row[:fulfillment_channel] == 'Amazon'
+    BookCultureLib::AmazonOrder.where(amazon_order_id: row[:amazon_order_id]).
+      first_or_create(purchase_date: DateTime.parse(row[:purchase_date]),
+                      fulfillment_channel: row[:fulfillment_channel],
+                      product_name: row[:product_name],
+                      sku: row[:sku],
+                      asin: row[:asin],
+                      quantity: row[:quantity],
+                      item_price: row[:item_price],
+                      ship_postal_code: row[:ship_postal_code],
+                      ship_country: row[:ship_country]
+                     )
+  end
 
   # If you just use .create() instead of .where().first_or_create(),
   # duplicates just silently fail and it moves on to the next item when dupes
