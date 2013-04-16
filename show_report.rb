@@ -27,6 +27,12 @@ report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
 #     end
 #   end
 
+#FIXME: Need a better method of handling this...
+if !BookCultureLib::AmazonOrder.any?
+  raise "Couldn't generate order report : No orders"
+end
+
+
 # These variables are just for clarity's sake in the .each part later
 start_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date - 14
 end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
