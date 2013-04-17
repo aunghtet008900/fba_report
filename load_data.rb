@@ -14,6 +14,7 @@ ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 #the_file = File.join("_SAMPLE_DATA","sample-input.txt")
 #the_file = File.join("_SAMPLE_DATA","sample-mangled-input.txt")
 the_file = ARGV[0]
+#TODO: Handle multiple files somehow? Either read them or error out.
 
 csv_args = {
   :headers => true,

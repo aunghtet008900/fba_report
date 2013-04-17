@@ -1,3 +1,4 @@
+#NOTE: Require this _after_ requiring CSV, otherwise you'll get an error.
 
 class CSV
 
