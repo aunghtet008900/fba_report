@@ -2,18 +2,22 @@
 
 require 'sqlite3'
 require 'active_record'
+require 'optparse'
 require_relative 'db/config'
 require_relative 'lib/book_culture_lib'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
-#TODO: Make this be an option:
-## Show all orders:
-#BookCultureLib::AmazonOrder.all.each do |ord|
-#  puts ord
-#end
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options]"
 
-puts
+  opts.on("-a", "--all", "Display all [warning: lots of text]") do |a|
+    options[:all] = a
+  end
+end.parse!
+
+puts  # yay formatting.
 
 puts "The attributes:"
 BookCultureLib::AmazonOrder.attribute_names.each do |atr|
@@ -29,4 +33,9 @@ if BookCultureLib::AmazonOrder.first
   puts "  " + BookCultureLib::AmazonOrder.last.purchase_date.to_s
 end
 
-puts
+puts  # yay formatting.
+
+if options[:all]
+  p BookCultureLib::AmazonOrder.all
+end
+
