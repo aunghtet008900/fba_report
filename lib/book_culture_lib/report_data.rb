@@ -1,5 +1,9 @@
 # The object used to pass data to the ERB templates for reports
 
+#TODO: Change all occurences of 'day' to read 'period' or 'time_period',
+#       in order to be more semantically general
+#       (NOTE: will probably require re-working the template or report generator!)
+
 module BookCultureLib
 
   class ReportData

@@ -12,7 +12,7 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
 
-  opts.on("-a", "--all", "Display all [warning: lots of text]") do |a|
+  opts.on("-a", "--all", "Display all info in db [warning: lots of text]") do |a|
     options[:all] = a
   end
 end.parse!
@@ -37,5 +37,6 @@ puts  # yay formatting.
 
 if options[:all]
   p BookCultureLib::AmazonOrder.all
+  puts  # yay formatting.
 end
 
