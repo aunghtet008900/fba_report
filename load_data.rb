@@ -4,9 +4,59 @@ require 'sqlite3'
 require 'active_record'
 require 'csv'
 require 'date'
+require 'optparse'
 require_relative 'db/config'
 require_relative 'lib/book_culture_lib'
 require_relative 'lib/csv'  # MUST come after requiring 'csv'
+
+
+# Parse all the options before doing anything else.
+# -------------------------------------------------
+
+# Set default options
+options = {
+  :force_reimport => false,
+  :archive => false,
+  :verbose => false
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options] INPUTFILE"
+
+  opts.separator ""
+  opts.separator "Specific options:"
+
+  opts.on("-f", "--force", "Force re-importing of pre-existing info") do |f|
+    options[:force_reimport] = f
+  end
+
+  opts.on("-a", "--[no-]archive", "Archive input file after import") do |a|
+    options[:archive] = a
+  end
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+
+  opts.separator ""
+  opts.separator "Common options:"
+
+  # No argument, shows at tail.  This will print an options summary.
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+  ## Another typical switch to print the version.
+  #opts.on_tail("--version", "Show version") do
+  #  puts OptionParser::Version.join('.')
+  #  exit
+  #end
+
+end.parse!
+
+
+
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
@@ -63,4 +113,5 @@ puts "Done."
 puts "Rows read:      #{row_count}"
 puts "FBA rows:       #{fba_count}"
 puts "FBA rows added: #{after_count - before_count}"
+
 
