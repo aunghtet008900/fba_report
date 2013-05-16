@@ -9,9 +9,15 @@ Since I haven't been able to find the kind of reporting tools on Amazon that I w
 This program is designed to be easily called from another directory, if you desire, and ideally, it should be a Gem, but it hasn't made it that far yet. I keep it in a subdir off of the path where I keep my order exports from Amazon.
 
 
+Requirements
+------------
+- [activerecord](http://rubygems.org/gems/activerecord)
+- [sqlite3](http://rubygems.org/gems/sqlite3)
+
+
 The Database
 ------------
-The database is interfaced with by way of ActiveRecord. So far, only SQLite is implemented, since that's all I've been using, but aside from a few things in the `Rakefile` that aren't necessary, getting it to work with another database that ActiveRecord supports shouldn't be too hard at all (and might even be just a simple config change).
+The database is interfaced with by way of ActiveRecord. So far, only SQLite is implemented, since that's all I've been using, but aside from a few things in the Rakefile that aren't necessary, getting it to work with another database that ActiveRecord supports shouldn't be too hard at all (and might even be just a simple config change).
 
 
 The Command Line Tools
@@ -80,14 +86,19 @@ Common options:
 ```
 
 
-### Rake
+### rake
 
 There are also a few useful database-specific tasks in the Rakefile:
+
+```
 rake db:drop     # Drop the db
 rake db:info     # Show info about all tables in db
 rake db:migrate  # Migrate the db
 rake db:reset    # Reset the db
+```
 
 
-
+License
+-------
+Please see [LICENSE.txt](LICENSE.txt).
 
