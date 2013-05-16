@@ -77,6 +77,9 @@
       table .vertical {
         white-space: nowrap;
       }
+      .zero {
+        color: #aaa;
+      }
     </style>
   </head>
   <body>
@@ -94,7 +97,11 @@
         <tr>
           <th><%= day[:date] %></th>
           <% @all_skus.each do |sku| %>
-            <td><%= day[:quantities][sku] %></td>
+            <% if day[:quantities][sku] == 0 %>
+              <td class="zero">0</td>
+            <% else %>
+              <td><%= day[:quantities][sku] %></td>
+            <% end %>
           <% end %>
         </tr>
       <% end %>
