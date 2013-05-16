@@ -35,6 +35,11 @@ OptionParser.new do |opts|
     options[:interval] = i
   end
 
+  opts.on("-s", "--skus sku1,sku2,sku3", Array,
+          "Include only specific skus in report") do |list|
+    options[:skus] = list
+  end
+
   opts.on("-f", "--format TYPE", [:html, :csv, :tsv],
           "The format of output to generate", "  (html, csv, tsv)") do |t|
     options[:format] = t
@@ -115,7 +120,7 @@ end
 end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 
 
-my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date)
+my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date, options[:skus])
 
 if options[:output]
   puts "Sorry, file output is not supported yet."

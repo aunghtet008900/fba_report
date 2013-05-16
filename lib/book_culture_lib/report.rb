@@ -2,7 +2,8 @@ module BookCultureLib
 
   class Report
 
-    def initialize( interval, start_date, end_date )
+    def initialize( interval, start_date, end_date, skus )
+      @skus = skus
       case interval
       when :daily
         @the_report = generate_daily_report(start_date, end_date)
@@ -28,7 +29,8 @@ module BookCultureLib
     def generate_daily_report(start_date, end_date)
 
       # Will be used for generating a table:
-      fba_skus = BookCultureLib::AmazonOrder.uniq.pluck(:sku)
+      #fba_skus = BookCultureLib::AmazonOrder.uniq.pluck(:sku)
+      fba_skus = @skus || BookCultureLib::AmazonOrder.uniq.pluck(:sku)
       #TODO: Might be better to do a .where with the start and end of range, then do a pluck
       #       from that, so we're only listing fba skus that exist in the desired range.
       #(Make this some sort of configurable option!)
