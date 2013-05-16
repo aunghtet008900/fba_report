@@ -19,9 +19,26 @@ OptionParser.new do |opts|
   opts.on("-a", "--all", "Display all info in db [warning: lots of text]") do |a|
     options[:all] = a
   end
+
+  opts.on("-q", "--quiet", "Supress confirmation prompt for --all") do |q|
+    options[:quiet] = q
+  end
 end.parse!
 
 puts  # yay formatting.
+
+if options[:all]
+  if not(options[:quiet])
+    print "Are you sure you want to display ALL records? (Type 'yes' if so.): "
+    input = gets.strip
+
+    if input.downcase != 'yes'
+      exit 1
+    end
+
+    puts  # yay formatting.
+  end
+end
 
 puts "The attributes:"
 BookCultureLib::AmazonOrder.attribute_names.each do |atr|
