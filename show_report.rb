@@ -5,7 +5,11 @@ require 'active_record'
 require 'erb'
 require 'date'
 require 'optparse'
-require_relative 'db/config'
+begin
+  require_relative 'db/config'
+rescue LoadError
+  abort "db/config.rb is missing. See db/config-EXAMPLE.rb."
+end
 require_relative 'lib/book_culture_lib'
 
 #TODO: Rename this file to 'generate_report' (or something) since it does more

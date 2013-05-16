@@ -5,7 +5,11 @@ require 'active_record'
 require 'csv'
 require 'date'
 require 'optparse'
-require_relative 'db/config'
+begin
+  require_relative 'db/config'
+rescue LoadError
+  abort "db/config.rb is missing. See db/config-EXAMPLE.rb."
+end
 require_relative 'lib/book_culture_lib'
 require_relative 'lib/csv'  # MUST come after requiring 'csv'
 

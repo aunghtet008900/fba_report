@@ -3,7 +3,11 @@
 require 'sqlite3'
 require 'active_record'
 require 'optparse'
-require_relative 'db/config'
+begin
+  require_relative 'db/config'
+rescue LoadError
+  abort "db/config.rb is missing. See db/config-EXAMPLE.rb."
+end
 require_relative 'lib/book_culture_lib'
 
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
