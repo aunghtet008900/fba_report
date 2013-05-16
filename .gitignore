@@ -6,6 +6,8 @@ vendor/bundle/
 Gemfile
 Gemfile.lock
 .ackrc
+db/config.rb
+
 
 # Logs and databases #
 ######################

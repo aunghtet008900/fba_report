@@ -12,7 +12,7 @@ This program is designed to be easily called from another directory, if you desi
 Requirements
 ------------
 - [activerecord](http://rubygems.org/gems/activerecord)
-- [sqlite3](http://rubygems.org/gems/sqlite3)
+- a database (and interface) compatible with activerecord (right now, only [sqlite3](http://rubygems.org/gems/sqlite3) is supported, I think)
 
 
 The Database
