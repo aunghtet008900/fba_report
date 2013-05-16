@@ -123,7 +123,7 @@ end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date, options[:skus])
 
 if options[:output]
-  puts "Sorry, file output is not supported yet."
+  $stderr.puts "Sorry, file output is not supported yet."
 else
   puts my_report
 end
