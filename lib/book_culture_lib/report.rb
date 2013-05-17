@@ -29,7 +29,6 @@ module BookCultureLib
     def generate_daily_report(start_date, end_date)
 
       # Will be used for generating a table:
-      #fba_skus = BookCultureLib::AmazonOrder.uniq.pluck(:sku)
       fba_skus = @skus || BookCultureLib::AmazonOrder.uniq.pluck(:sku)
       #TODO: Might be better to do a .where with the start and end of range, then do a pluck
       #       from that, so we're only listing fba skus that exist in the desired range.
@@ -75,8 +74,38 @@ module BookCultureLib
     end
 
 
+    #TODO: Abstract this more... the _monthly, _weekly, etc stuff should just
+    #      generate the array of days to feed to the rest of this, which will
+    #      be in a separate universal method
     def generate_monthly_report(start_date, end_date)
-      raise "Monthly reporting not supported yet"
+      fba_skus = @skus || BookCultureLib::AmazonOrder.uniq.pluck(:sku)
+
+      report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
+
+      dstart = start_date.beginning_of_month
+      dend = end_date.beginning_of_month
+
+      array_of_months = (dstart..dend).select {|d| d.day == 1}
+
+      array_of_months.each do |day|
+        start_of_month = day
+        start_of_next_month = day >> 1
+        temp_hash = { date: day, quantities: Hash.new(0) }
+
+        BookCultureLib::AmazonOrder.where("purchase_date >= :start_date AND purchase_date < :end_date",
+                                          {:start_date => start_of_month, :end_date => start_of_next_month}).each do |order|
+          temp_hash[:quantities][order.sku] += order.quantity
+        end
+
+        report_data << temp_hash
+      end
+
+      template = IO.read(File.expand_path('../../../views/report_template.html.erb',
+                                          __FILE__))
+      rhtml = ERB.new(template, 0, '>')
+      # The 0 does nothing special, the '>' eliminates pointless newlines
+
+      return rhtml.result(report_data.get_binding)
     end
 
 
