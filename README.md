@@ -64,7 +64,17 @@ Here's the help (generated with `show_report.rb --help`):
 ```
 Usage: show_report.rb [options]
 
-Specific options:
+Spans and offsets (can be combined):
+    -d, --span-day DAYS              Length of report in days
+    -w, --span-week WEEKS            Length of report in weeks
+    -m, --span-month MONTHS          Length of report in months
+    -y, --span-year YEARS            Length of report in years
+        --offset-day DAYS            Offset of report in days
+        --offset-week WEEKS          Offset of report in weeks
+        --offset-month MONTHS        Offset of report in months
+        --offset-year YEARS          Offset of report in years
+
+Misc options:
     -i, --interval INTERVAL          The smallest time period to display in report
                                        (daily, weekly, monthly, yearly)
     -s, --skus sku1,sku2,sku3        Include only specific skus in report
@@ -73,16 +83,10 @@ Specific options:
     -o, --output FILENAME            The name of the file to output to
                                        (if none specified, outputs to stdout)
     -v, --[no-]verbose               Run verbosely
-
-Exclusive options:
-    -d, --days DAYS                  Length of report in days
-    -w, --weeks WEEKS                Length of report in weeks
-    -m, --months MONTHS              Length of report in months
-    -y, --years YEARS                Length of report in years
     -a, --all                        Report on entire timespan in database
-
-Common options:
+                                       (overrides spans and offsets)
     -h, --help                       Show this message
+        --dry-run                    Only show start and end dates, no report
 ```
 
 
