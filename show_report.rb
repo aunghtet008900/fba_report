@@ -24,14 +24,59 @@ options = {
   :interval => :daily,
   :format => :html,
   :verbose => false,
-  :days => :all
+  :all => true,
+  :span_day => 0,
+  :offset_day => 0,
 }
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
 
   opts.separator ""
-  opts.separator "Specific options:"
+  opts.separator "Spans and offsets (can be combined):"
+
+  opts.on("-d", "--span-day DAYS", Integer, "Length of report in days") do |d|
+    options[:span_day] += d
+    options[:all] = false
+  end
+
+  opts.on("-w", "--span-week WEEKS", Integer, "Length of report in weeks") do |w|
+    options[:span_day] += w * 7
+    options[:all] = false
+  end
+
+  opts.on("-m", "--span-month MONTHS", Integer, "Length of report in months") do |m|
+    options[:span_day] += (m * 30)
+    options[:all] = false
+  end
+
+  opts.on("-y", "--span-year YEARS", Integer, "Length of report in years") do |y|
+    options[:span_day] += (y * 365)
+    options[:all] = false
+  end
+
+  opts.on("--offset-day DAYS", Integer, "Offset of report in days") do |d|
+    options[:offset_day] += d
+    options[:all] = false
+  end
+
+  opts.on("--offset-week WEEKS", Integer, "Offset of report in weeks") do |w|
+    options[:offset_day] += (w * 7)
+    options[:all] = false
+  end
+
+  opts.on("--offset-month MONTHS", Integer, "Offset of report in months") do |m|
+    options[:offset_day] += (m * 30)
+    options[:all] = false
+  end
+
+  opts.on("--offset-year YEARS", Integer, "Offset of report in years") do |y|
+    options[:offset_day] += (y * 365)
+    options[:all] = false
+  end
+
+  opts.separator ""
+  opts.separator "Misc options:"
 
   opts.on("-i", "--interval INTERVAL", [:daily, :weekly, :monthly, :yearly],
           "The smallest time period to display in report",
@@ -58,41 +103,18 @@ OptionParser.new do |opts|
     options[:verbose] = v
   end
 
-  #opts.on("--days-ago DAYS", Integer, "Final day of report [default 0]") do |d|
-  #  options[:days_ago] = d
-  #end
-
-  opts.separator ""
-  opts.separator "Exclusive options:"
-
-  opts.on("-d", "--days DAYS", Integer, "Length of report in days") do |d|
-    options[:days] = d
+  opts.on("-a", "--all", "Report on entire timespan in database",
+          "  (overrides spans and offsets)") do |a|
+    options[:all] = a
   end
 
-  opts.on("-w", "--weeks WEEKS", Integer, "Length of report in weeks") do |w|
-    options[:days] = w * 7
-  end
-
-  opts.on("-m", "--months MONTHS", Integer, "Length of report in months") do |m|
-    options[:days] = m * 30
-  end
-
-  opts.on("-y", "--years YEARS", Integer, "Length of report in years") do |y|
-    options[:days] = y * 365
-  end
-
-  opts.on("-a", "--all", "Report on entire timespan in database") do |a|
-    #TODO: put this in terms of start_date! (or :days?)
-    options[:days] = :all
-  end
-
-  opts.separator ""
-  opts.separator "Common options:"
-
-  # No argument, shows at tail.  This will print an options summary.
-  opts.on_tail("-h", "--help", "Show this message") do
+  opts.on("-h", "--help", "Show this message") do
     puts opts
     exit
+  end
+
+  opts.on("--dry-run", "Only show start and end dates, no report") do |d|
+    options[:dry_run] = d
   end
 
   ## Another typical switch to print the version.
@@ -108,23 +130,35 @@ end.parse!
 # Act on the options that were parsed.
 # ------------------------------------
 
+$stderr.puts "Start report generation..."
 ActiveRecord::Base.establish_connection(MyConfig::CONFIG)
 
 #FIXME: Need a better method of handling this...
 if !BookCultureLib::AmazonOrder.any?
-  raise "Couldn't generate order report : No orders"
+  #raise "Couldn't generate order report : No orders"
+  abort "Couldn't generate order report : No orders"
 end
 
 
-if options[:days] == :all
+if options[:all]
   start_date = BookCultureLib::AmazonOrder.first.purchase_date.to_date
+  end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 else
-  start_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date - options[:days]
+  #start_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date - options[:span_day]
+  start_date = Date.today - options[:offset_day] - options[:span_day]
+  end_date = Date.today - options[:offset_day]
 end
-end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
+#end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 
 
 my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date, options[:skus])
+$stderr.puts "Done."
+
+if options[:dry_run]
+  puts "start: #{start_date}"
+  puts "end:   #{end_date}"
+  exit
+end
 
 if options[:output]
   $stderr.puts "Sorry, file output is not supported yet."
