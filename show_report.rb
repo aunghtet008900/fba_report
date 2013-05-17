@@ -161,7 +161,10 @@ if options[:dry_run]
 end
 
 if options[:output]
-  $stderr.puts "Sorry, file output is not supported yet."
+  #TODO: Make this save safely, ask about overwriting, etc
+  File.open(options[:output], 'w+') do |f|
+    f.puts my_report
+  end
 else
   puts my_report
 end
