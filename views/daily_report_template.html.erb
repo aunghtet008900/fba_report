@@ -1,0 +1,111 @@
+<html>
+  <head>
+    <title>Generated on <%= @date_generated %></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+
+    <script type="text/javascript">
+      (function ($) {
+       $.fn.rotateTableCellContent = function (options) {
+       /*
+          Version 1.0
+          7/2011
+          Written by David Votrubec (davidjs.com) and
+          Michal Tehnik (@Mictech) for ST-Software.com
+        */
+
+       var cssClass = ((options) ? options.className : false) || "vertical";
+
+       var cellsToRotate = $('.' + cssClass, this);
+
+       var betterCells = [];
+       cellsToRotate.each(function () {
+         var cell = $(this)
+         , newText = cell.text()
+         , height = cell.height()
+         , width = cell.width()
+         , newDiv = $('<div>', { height: width, width: height })
+         , newInnerDiv = $('<div>', { text: newText, 'class': 'rotated' });
+
+         newInnerDiv.css('-webkit-transform-origin', (width / 2) + 'px ' + (width / 2) + 'px');
+         newInnerDiv.css('-moz-transform-origin', (width / 2) + 'px ' + (width / 2) + 'px');
+         newDiv.append(newInnerDiv);
+
+         betterCells.push(newDiv);
+         });
+
+       cellsToRotate.each(function (i) {
+           $(this).html(betterCells[i]);
+           });
+       };
+      })(jQuery);
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+          $('.table').rotateTableCellContent();
+          });
+    </script>
+
+    <style>
+      .table {
+        border: 1px solid #666666;
+        border-collapse: collapse;
+      }
+      .table th {
+        border: 1px solid #666666;
+        padding: 8px;
+        background-color: #dedede;
+      }
+      .table td {
+        border: 1px solid #666666;
+        padding: 8px;
+        background-color: #ffffff;
+      }
+
+      /* Styles for rotateTableCellContent plugin*/
+      table div.rotated {
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        writing-mode:tb-rl;
+        white-space: nowrap;
+      }
+
+      thead th {
+        vertical-align: top;
+      }
+
+      table .vertical {
+        white-space: nowrap;
+      }
+      .zero {
+        color: #eee; /* Barely visible, but still there */
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>Generated on <%= @date_generated %></h1>
+
+    <table class="table">
+      <tr>
+        <th>Day</th>
+        <% @all_skus.each do |sku| %>
+          <th class="vertical"><%= sku %></th>
+        <% end %>
+      </tr>
+      <% @days.each do |day| %>
+        <tr>
+          <th><%= day[:date] %></th>
+          <% @all_skus.each do |sku| %>
+            <% if day[:quantities][sku] == 0 %>
+              <td class="zero">0</td>
+            <% else %>
+              <td><%= day[:quantities][sku] %></td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+
+  </body>
+</html>

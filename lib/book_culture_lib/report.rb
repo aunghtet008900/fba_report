@@ -60,7 +60,7 @@ module BookCultureLib
       end
 
       #TODO: Move the template path stuff to the config?
-      template = IO.read(File.expand_path('../../../views/report_template.html.erb',
+      template = IO.read(File.expand_path('../../../views/daily_report_template.html.erb',
                                           __FILE__))
       rhtml = ERB.new(template, 0, '>')
       # The 0 does nothing special, the '>' eliminates pointless newlines
@@ -100,7 +100,7 @@ module BookCultureLib
         report_data << temp_hash
       end
 
-      template = IO.read(File.expand_path('../../../views/report_template.html.erb',
+      template = IO.read(File.expand_path('../../../views/monthly_report_template.html.erb',
                                           __FILE__))
       rhtml = ERB.new(template, 0, '>')
       # The 0 does nothing special, the '>' eliminates pointless newlines

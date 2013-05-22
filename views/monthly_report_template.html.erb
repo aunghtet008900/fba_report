@@ -78,7 +78,7 @@
         white-space: nowrap;
       }
       .zero {
-        color: #aaa;
+        color: #eee; /* Barely visible, but still there */
       }
     </style>
   </head>
@@ -88,14 +88,14 @@
 
     <table class="table">
       <tr>
-        <th>Day</th>
+        <th>Month</th>
         <% @all_skus.each do |sku| %>
           <th class="vertical"><%= sku %></th>
         <% end %>
       </tr>
       <% @days.each do |day| %>
         <tr>
-          <th><%= day[:date] %></th>
+          <th><%= day[:date].strftime("%Y-%m") %></th>
           <% @all_skus.each do |sku| %>
             <% if day[:quantities][sku] == 0 %>
               <td class="zero">0</td>
