@@ -74,7 +74,7 @@ csv_args = {
   :headers => true,
   :col_sep => "\t",                    # Tabs separate columns.
   :skip_blanks => false,               # Skip blank lines.
-  :quote_char => '\x00',               # So normal quotes don't mess things up.
+  :quote_char => "\x00",               # So normal quotes don't mess things up.
   :header_converters => :amazon_symbol # Custom header conversion.
 }
 
