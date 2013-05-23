@@ -10,6 +10,12 @@ require_relative 'lib/book_culture_lib'
 #
 # Note: this is currently hardcoded to this specific project.
 
+task :default do
+  puts "Available tasks:"
+  system("rake -sT")  # s for silent
+end
+
+
 namespace :db do
 
   desc "Migrate the db"
