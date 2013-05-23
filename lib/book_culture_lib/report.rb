@@ -115,7 +115,20 @@ module BookCultureLib
     #
     def generate_yearly_report(start_date, end_date)
       #TODO: Make this work!
-      raise "Yearly reporting not supported yet"
+      #raise "Yearly reporting not supported yet"
+
+      dstart = start_date.beginning_of_year
+      dend = end_date.beginning_of_year
+
+      array_of_years = (dstart..dend).select {|d| d.yday == 1}
+
+      array_of_years.map! do |day|
+        start_of_year = day
+        start_of_next_year = day.next_year
+        {:start => start_of_year, :end => start_of_next_year}
+      end
+
+      return generate_report(array_of_years, 'yearly_report_template.html.erb')
     end
 
 
