@@ -46,7 +46,7 @@ module BookCultureLib
         array_of_days << {:start => start_of_day, :end => end_of_day}
       end
 
-      return generate_report(array_of_days, '../../../views/daily_report_template.html.erb')
+      return generate_report(array_of_days, 'daily_report_template.html.erb')
     end
 
 
@@ -59,7 +59,25 @@ module BookCultureLib
     # * +end_date+ - a Date instance representing the start of the report
     #
     def generate_weekly_report(start_date, end_date)
-      raise "Weekly reporting not supported yet"
+      #raise "Weekly reporting not supported yet"
+
+      ##dstart = start_date.beginning_of_month
+      ##dend = end_date.beginning_of_month
+
+      #array_of_sundays = (start_date..end_date).to_a.select {|k| k.wday == 0}
+
+      dstart = start_date.beginning_of_week
+      dend = end_date.end_of_week
+
+      array_of_weeks = (dstart..dend).select {|d| d.wday == 0}
+
+      array_of_weeks.map! do |day|
+        start_of_week = day
+        start_of_next_week = day.next_week
+        {:start => start_of_week, :end => start_of_next_week}
+      end
+
+      return generate_report(array_of_weeks, 'daily_report_template.html.erb')
     end
 
 
@@ -83,7 +101,7 @@ module BookCultureLib
         {:start => start_of_month, :end => start_of_next_month}
       end
 
-      return generate_report(array_of_months, '../../../views/monthly_report_template.html.erb')
+      return generate_report(array_of_months, 'monthly_report_template.html.erb')
     end
 
 
@@ -96,6 +114,7 @@ module BookCultureLib
     # * +end_date+ - a Date instance representing the start of the report
     #
     def generate_yearly_report(start_date, end_date)
+      #TODO: Make this work!
       raise "Yearly reporting not supported yet"
     end
 
@@ -140,7 +159,9 @@ module BookCultureLib
       end
 
       #TODO: Move the template path stuff to the config?
-      template = IO.read(File.expand_path(template_path, __FILE__))
+      #template = IO.read(File.expand_path(template_path, __FILE__))
+      template = IO.read(File.expand_path(File.join('../../../views', template_path), __FILE__))
+
       rhtml = ERB.new(template, 0, '>')
       # The 0 does nothing special, the '>' eliminates pointless newlines
 

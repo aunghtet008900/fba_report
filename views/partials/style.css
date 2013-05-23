@@ -1,0 +1,36 @@
+.table {
+  border: 1px solid #666666;
+  border-collapse: collapse;
+}
+
+.table th {
+  border: 1px solid #666666;
+  padding: 8px;
+  background-color: #dedede;
+}
+
+.table td {
+  border: 1px solid #666666;
+  padding: 8px;
+  background-color: #ffffff;
+}
+
+/* Styles for rotateTableCellContent plugin*/
+table div.rotated {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  writing-mode:tb-rl;
+  white-space: nowrap;
+}
+
+thead th {
+  vertical-align: top;
+}
+
+table .vertical {
+  white-space: nowrap;
+}
+
+.zero {
+  color: #eee; /* Barely visible, but still there */
+}
