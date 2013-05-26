@@ -21,13 +21,22 @@
 
     <h1>Generated on <%= @date_generated %></h1>
 
-    <table class="table">
-      <tr>
-        <th>Month</th>
-        <% @all_skus.each do |sku| %>
-          <th class="vertical"><%= sku %></th>
-        <% end %>
-      </tr>
+    <table id="report-table" class="table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <% @all_skus.each do |sku| %>
+            <th class="vertical"><%= BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name][0..45] %></th>
+          <% end %>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <% @all_skus.each do |sku| %>
+            <th><a class="tooltip">?<span><%= sku %></span></a></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
       <% @days.each do |day| %>
         <tr>
           <th><%= day[:date].strftime("%Y-%m") %></th>
@@ -40,6 +49,7 @@
           <% end %>
         </tr>
       <% end %>
+      </tbody>
     </table>
 
   </body>

@@ -157,6 +157,19 @@ module BookCultureLib
       #       from that, so we're only listing fba skus that exist in the desired range.
       #(Make this some sort of configurable option!)
 
+      ordered_skus_lookup = []
+
+      fba_skus.each do |sku|
+        product_name = BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name][0..55]
+        ordered_skus_lookup << {:sku => sku, :name => product_name}
+      end
+
+      ordered_skus_lookup.sort_by { |hsh| hsh[:name] }
+      #TODO: Pass this to the template instead of fba_skus!!!!
+
+      ## A title, based on sku:
+      #BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name][0..55]
+
       report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
 
       array_of_periods.each do |period|

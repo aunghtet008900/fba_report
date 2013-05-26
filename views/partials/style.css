@@ -25,6 +25,7 @@ table div.rotated {
 
 thead th {
   vertical-align: top;
+  text-align: left;
 }
 
 table .vertical {
@@ -34,3 +35,23 @@ table .vertical {
 .zero {
   color: #eee; /* Barely visible, but still there */
 }
+
+/*
+ * To use these tooltips, you need something like:
+ *  <a class="tooltip">visible text<span>tooltip text</span></a>
+ */
+a.tooltip span {
+  display:none;
+  padding:2px 3px;
+  margin-left:8px;
+  width:130px;
+}
+
+a.tooltip:hover span{
+  display:inline;
+  position:absolute;
+  background:#ffffff;
+  border:1px solid #cccccc;
+  color:#6c6c6c;
+}
+
