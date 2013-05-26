@@ -7,12 +7,13 @@
 module BookCultureLib
 
   class ReportData
-    def initialize( date_generated, products, report_opts = {} )
+    def initialize( date_generated, products, render_opts = {} )
       @date_generated = date_generated
       @products = products
       @dates = []
-      @date_format = report_opts[:date_format] || "%Y-%m-%d"
-      @date_name = report_opts[:date_name] || "Date"
+      @date_format = render_opts[:date_format] || "%Y-%m-%d"
+      @date_name = render_opts[:date_name] || "Date"
+      @name_length = render_opts[:name_length] || 45
     end
 
     def add_date( date )
@@ -45,7 +46,7 @@ module BookCultureLib
 
 
     def shrink(str, len)
-      if str.length > len
+      if (str.length > len) && (len > 0)
         str[0..len] + "..."
       else
         str

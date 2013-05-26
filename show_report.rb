@@ -78,15 +78,17 @@ OptionParser.new do |opts|
   opts.separator ""
   opts.separator "Misc options:"
 
-  opts.on("-i", "--interval INTERVAL", [:daily, :weekly, :monthly, :yearly],
-          "The smallest time period to display in report",
-          "  (daily, weekly, monthly, yearly)") do |i|
-    options[:interval] = i
+  opts.on("-a", "--all", "Report on entire timespan in database",
+          "  (overrides spans and offsets)") do |a|
+    options[:all] = a
   end
 
-  opts.on("-s", "--skus sku1,sku2,sku3", Array,
-          "Include only specific skus in report") do |list|
-    options[:skus] = list
+  opts.on("--dry-run", "Only show start and end dates, no report") do |d|
+    options[:dry_run] = d
+  end
+
+  opts.on("--flip", "Transpose x and y axis") do |f|
+    options[:flip] = f
   end
 
   opts.on("-f", "--format TYPE", [:html, :csv, :tsv],
@@ -94,28 +96,34 @@ OptionParser.new do |opts|
     options[:format] = t
   end
 
-  opts.on("-o", "--output FILENAME", "The name of the file to output to",
-          "  (if none specified, outputs to stdout)") do |f|
-    options[:output] = f
-  end
-
-  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-    options[:verbose] = v
-  end
-
-  opts.on("-a", "--all", "Report on entire timespan in database",
-          "  (overrides spans and offsets)") do |a|
-    options[:all] = a
-  end
-
   opts.on("-h", "--help", "Show this message") do
     puts opts
     exit
   end
 
-  opts.on("--dry-run", "Only show start and end dates, no report") do |d|
-    options[:dry_run] = d
+  opts.on("-i", "--interval INTERVAL", [:daily, :weekly, :monthly, :yearly],
+          "The smallest time period to display in report",
+          "  (daily, weekly, monthly, yearly)") do |i|
+    options[:interval] = i
   end
+
+  opts.on("--name-length LENGTH", Integer, "Set limit on length of product name in output") do |l|
+    options[:name_length] = l
+  end
+
+  opts.on("-o", "--output FILENAME", "The name of the file to output to",
+          "  (if none specified, outputs to stdout)") do |f|
+    options[:output] = f
+  end
+
+  opts.on("-s", "--skus sku1,sku2,sku3", Array,
+          "Include only specific skus in report") do |list|
+    options[:skus] = list
+  end
+
+  #opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  #  options[:verbose] = v
+  #end
 
   ## Another typical switch to print the version.
   #opts.on_tail("--version", "Show version") do
@@ -150,8 +158,12 @@ else
 end
 #end_date = BookCultureLib::AmazonOrder.last.purchase_date.to_date
 
+report_opts = {
+  :name_length => options[:name_length],
+  :flip => options[:flip],
+}
 
-my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date, options[:skus])
+my_report = BookCultureLib::Report.new(options[:interval], start_date, end_date, options[:skus], report_opts)
 $stderr.puts "Done."
 
 if options[:dry_run]

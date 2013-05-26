@@ -7,6 +7,7 @@
   border: 1px solid #666666;
   padding: 8px;
   background-color: #dedede;
+  white-space: nowrap;
 }
 
 .table td {

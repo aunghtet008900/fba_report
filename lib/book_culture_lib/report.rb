@@ -2,8 +2,9 @@ module BookCultureLib
 
   class Report
 
-    def initialize( interval, start_date, end_date, skus )
+    def initialize( interval, start_date, end_date, skus, report_opts )
       @skus = skus
+      @report_opts = report_opts
       #TODO: Move this case stuff somewhere else? Handle it better? Smells weird...
       case interval
       when :daily
@@ -35,6 +36,7 @@ module BookCultureLib
     #
     # * +start_date+ - a Date instance representing the start of the report
     # * +end_date+ - a Date instance representing the start of the report
+    # * +report_opts+ - options passed along, to be turned into render options
     #
     def generate_daily_report(start_date, end_date)
 
@@ -57,6 +59,7 @@ module BookCultureLib
     #
     # * +start_date+ - a Date instance representing the start of the report
     # * +end_date+ - a Date instance representing the start of the report
+    # * +report_opts+ - options passed along, to be turned into render options
     #
     def generate_weekly_report(start_date, end_date)
       #TODO: Fix the weekly reports! It's not working right!!!
@@ -72,7 +75,7 @@ module BookCultureLib
         {:start => start_of_week, :end => start_of_next_week}
       end
 
-      return generate_report(array_of_weeks, :date_name => "Week")
+      return generate_report(array_of_weeks, {:date_name => "Week"})
     end
 
 
@@ -83,6 +86,7 @@ module BookCultureLib
     #
     # * +start_date+ - a Date instance representing the start of the report
     # * +end_date+ - a Date instance representing the start of the report
+    # * +report_opts+ - options passed along, to be turned into render options
     #
     def generate_monthly_report(start_date, end_date)
       dstart = start_date.beginning_of_month
@@ -96,7 +100,7 @@ module BookCultureLib
         {:start => start_of_month, :end => start_of_next_month}
       end
 
-      return generate_report(array_of_months, :date_format => "%Y-%m", :date_name => "Month")
+      return generate_report(array_of_months, {:date_format => "%Y-%m", :date_name => "Month"})
     end
 
 
@@ -107,6 +111,7 @@ module BookCultureLib
     #
     # * +start_date+ - a Date instance representing the start of the report
     # * +end_date+ - a Date instance representing the start of the report
+    # * +report_opts+ - options passed along, to be turned into render options
     #
     def generate_yearly_report(start_date, end_date)
       dstart = start_date.beginning_of_year
@@ -120,7 +125,7 @@ module BookCultureLib
         {:start => start_of_year, :end => start_of_next_year}
       end
 
-      return generate_report(array_of_years, :date_format => "%Y", :date_name => "Year")
+      return generate_report(array_of_years, {:date_format => "%Y", :date_name => "Year"})
     end
 
 
@@ -147,9 +152,13 @@ module BookCultureLib
     # * +:date_format+ - a string of the DateTime#strftime format for diplaying the dates
     # * +:date_name+ - a string to be the header of the date column
     # * +:template_path+ - the path to the report template, relative to the views dir, to override the default
+    # * +:name_length+ - the path to the report template, relative to the views dir, to override the default
+    # * +:flip+ - the path to the report template, relative to the views dir, to override the default
     #
     def generate_report(array_of_periods, report_opts = {} )
       #TODO: Pass it the activerecord thingy it needs, instead of hardcoding it.
+
+      @report_opts.merge!(report_opts)
 
       fba_skus = @skus || BookCultureLib::AmazonOrder.uniq.pluck(:sku)
       #TODO: Might be better to do a .where with the start and end of range, then do a pluck
@@ -165,7 +174,7 @@ module BookCultureLib
 
       sku_data.sort_by! { |hsh| hsh[:name] }
 
-      report_data = BookCultureLib::ReportData.new( Time.now.to_s, sku_data, report_opts )
+      report_data = BookCultureLib::ReportData.new( Time.now.to_s, sku_data, @report_opts )
 
       array_of_periods.each do |period|
         temp_hash = { date: period[:start], quantities: Hash.new(0) }
@@ -179,7 +188,12 @@ module BookCultureLib
         report_data << temp_hash
       end
 
-      template_path = report_opts[:template_path] || 'standard_report_template.html.erb'
+      #TODO: Make --flip actually do what I want: transpose the x and y axis.
+      if @report_opts[:flip]
+        $stderr.puts "Sorry, --flip is not implemented yet. Skipping that option."
+      end
+
+      template_path = @report_opts[:template_path] || 'standard_report_template.html.erb'
       #TODO: Move the template path stuff to the config?
       #template = IO.read(File.expand_path(template_path, __FILE__))
       template = IO.read(File.expand_path(File.join('../../../views', template_path), __FILE__))
