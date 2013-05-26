@@ -1,0 +1,14 @@
+      <tbody>
+      <% @dates.each do |date| %>
+        <tr>
+          <th><%= date[:date].strftime(@date_format) %></th>
+          <% @products.each do |product| %>
+            <% if date[:quantities][product[:sku]] == 0 %>
+              <td class="zero">0</td>
+            <% else %>
+              <td><%= date[:quantities][product[:sku]] %></td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+      </tbody>

@@ -46,7 +46,7 @@ module BookCultureLib
         array_of_days << {:start => start_of_day, :end => end_of_day}
       end
 
-      return generate_report(array_of_days, 'daily_report_template.html.erb')
+      return generate_report(array_of_days)
     end
 
 
@@ -59,12 +59,7 @@ module BookCultureLib
     # * +end_date+ - a Date instance representing the start of the report
     #
     def generate_weekly_report(start_date, end_date)
-      #raise "Weekly reporting not supported yet"
-
-      ##dstart = start_date.beginning_of_month
-      ##dend = end_date.beginning_of_month
-
-      #array_of_sundays = (start_date..end_date).to_a.select {|k| k.wday == 0}
+      #TODO: Fix the weekly reports! It's not working right!!!
 
       dstart = start_date.beginning_of_week
       dend = end_date.end_of_week
@@ -77,7 +72,7 @@ module BookCultureLib
         {:start => start_of_week, :end => start_of_next_week}
       end
 
-      return generate_report(array_of_weeks, 'daily_report_template.html.erb')
+      return generate_report(array_of_weeks, :date_name => "Week")
     end
 
 
@@ -101,7 +96,7 @@ module BookCultureLib
         {:start => start_of_month, :end => start_of_next_month}
       end
 
-      return generate_report(array_of_months, 'monthly_report_template.html.erb')
+      return generate_report(array_of_months, :date_format => "%Y-%m", :date_name => "Month")
     end
 
 
@@ -114,9 +109,6 @@ module BookCultureLib
     # * +end_date+ - a Date instance representing the start of the report
     #
     def generate_yearly_report(start_date, end_date)
-      #TODO: Make this work!
-      #raise "Yearly reporting not supported yet"
-
       dstart = start_date.beginning_of_year
       dend = end_date.beginning_of_year
 
@@ -128,7 +120,7 @@ module BookCultureLib
         {:start => start_of_year, :end => start_of_next_year}
       end
 
-      return generate_report(array_of_years, 'yearly_report_template.html.erb')
+      return generate_report(array_of_years, :date_format => "%Y", :date_name => "Year")
     end
 
 
@@ -147,9 +139,16 @@ module BookCultureLib
     #        { :start => Date.new(2001,2,5), :end => Date.new(2001,2,6) },
     #      ]
     #
-    # * +template_path+ - the path to the report template, relative to this file
     #
-    def generate_report(array_of_periods, template_path)
+    # * +report_opts+ - a hash of various options (see below)
+    #
+    # ==== Report Options
+    #
+    # * +:date_format+ - a string of the DateTime#strftime format for diplaying the dates
+    # * +:date_name+ - a string to be the header of the date column
+    # * +:template_path+ - the path to the report template, relative to the views dir, to override the default
+    #
+    def generate_report(array_of_periods, report_opts = {} )
       #TODO: Pass it the activerecord thingy it needs, instead of hardcoding it.
 
       fba_skus = @skus || BookCultureLib::AmazonOrder.uniq.pluck(:sku)
@@ -157,20 +156,16 @@ module BookCultureLib
       #       from that, so we're only listing fba skus that exist in the desired range.
       #(Make this some sort of configurable option!)
 
-      ordered_skus_lookup = []
+      sku_data = []
 
       fba_skus.each do |sku|
-        product_name = BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name][0..55]
-        ordered_skus_lookup << {:sku => sku, :name => product_name}
+        product_name = BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name]
+        sku_data << {:sku => sku, :name => product_name}
       end
 
-      ordered_skus_lookup.sort_by { |hsh| hsh[:name] }
-      #TODO: Pass this to the template instead of fba_skus!!!!
+      sku_data.sort_by! { |hsh| hsh[:name] }
 
-      ## A title, based on sku:
-      #BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name][0..55]
-
-      report_data = BookCultureLib::ReportData.new( Time.now.to_s, fba_skus )
+      report_data = BookCultureLib::ReportData.new( Time.now.to_s, sku_data, report_opts )
 
       array_of_periods.each do |period|
         temp_hash = { date: period[:start], quantities: Hash.new(0) }
@@ -184,6 +179,7 @@ module BookCultureLib
         report_data << temp_hash
       end
 
+      template_path = report_opts[:template_path] || 'standard_report_template.html.erb'
       #TODO: Move the template path stuff to the config?
       #template = IO.read(File.expand_path(template_path, __FILE__))
       template = IO.read(File.expand_path(File.join('../../../views', template_path), __FILE__))

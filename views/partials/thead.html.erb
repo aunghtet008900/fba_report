@@ -1,0 +1,14 @@
+      <thead>
+        <tr>
+          <th><%= @date_name %></th>
+          <% @products.each do |product| %>
+            <th class="vertical"><%= shrink(product[:name], 45) %></th>
+          <% end %>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <% @products.each do |product| %>
+            <th><a class="tooltip">?<span><%= product[:sku] %></span></a></th>
+          <% end %>
+        </tr>
+      </thead>

@@ -7,18 +7,20 @@
 module BookCultureLib
 
   class ReportData
-    def initialize( date_generated, all_skus )
+    def initialize( date_generated, products, report_opts = {} )
       @date_generated = date_generated
-      @all_skus = all_skus
-      @days = []
+      @products = products
+      @dates = []
+      @date_format = report_opts[:date_format] || "%Y-%m-%d"
+      @date_name = report_opts[:date_name] || "Date"
     end
 
-    def add_day( day )
+    def add_date( date )
       #TODO: Rename this from 'add_day' and '@day' to something else, like 'period'
-      @days << day
+      @dates << date
     end
 
-    alias_method :<<, :add_day
+    alias_method :<<, :add_date
 
     def get_binding
       binding
@@ -40,6 +42,16 @@ module BookCultureLib
       t = ERB.new(content)
       t.result(binding)
     end
+
+
+    def shrink(str, len)
+      if str.length > len
+        str[0..len] + "..."
+      else
+        str
+      end
+    end
+
 
   end
 

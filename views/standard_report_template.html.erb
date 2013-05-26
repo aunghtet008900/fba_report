@@ -22,24 +22,8 @@
     <h1>Generated on <%= @date_generated %></h1>
 
     <table class="table">
-      <tr>
-        <th>Year</th>
-        <% @all_skus.each do |sku| %>
-          <th class="vertical"><%= sku %></th>
-        <% end %>
-      </tr>
-      <% @days.each do |day| %>
-        <tr>
-          <th><%= day[:date].strftime("%Y") %></th>
-          <% @all_skus.each do |sku| %>
-            <% if day[:quantities][sku] == 0 %>
-              <td class="zero">0</td>
-            <% else %>
-              <td><%= day[:quantities][sku] %></td>
-            <% end %>
-          <% end %>
-        </tr>
-      <% end %>
+      <%= render "partials/thead.html.erb" %>
+      <%= render "partials/tbody.html.erb" %>
     </table>
 
   </body>
