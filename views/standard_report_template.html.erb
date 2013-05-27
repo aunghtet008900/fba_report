@@ -24,6 +24,14 @@
     <table class="table">
       <%= render "partials/thead.html.erb" %>
       <%= render "partials/tbody.html.erb" %>
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <% @products.each do |product| %>
+            <td><%= product[:total] %></td>
+          <% end %>
+        </tr>
+      </tfoot>
     </table>
 
   </body>

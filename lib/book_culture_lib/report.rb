@@ -169,7 +169,11 @@ module BookCultureLib
 
       fba_skus.each do |sku|
         product_name = BookCultureLib::AmazonOrder.order("purchase_date ASC").where("sku = :sku", {:sku => sku}).last[:product_name]
-        sku_data << {:sku => sku, :name => product_name}
+        total = BookCultureLib::AmazonOrder.where("sku = :sku", {:sku => sku}).sum(:quantity)
+        ## These averages and maximums are just daily. Not sure how to change that...
+        #average = BookCultureLib::AmazonOrder.where("sku = :sku", {:sku => sku}).average(:quantity)
+        #maximum = BookCultureLib::AmazonOrder.where("sku = :sku", {:sku => sku}).maximum(:quantity)
+        sku_data << {:sku => sku, :name => product_name, :total => total, :average => average, :maximum => maximum}
       end
 
       sku_data.sort_by! { |hsh| hsh[:name] }
